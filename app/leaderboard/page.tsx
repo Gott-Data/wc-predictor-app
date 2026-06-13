@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { GROUP_MATCHES } from "@/lib/data";
 import { getUsers, getUserState } from "@/lib/store";
+import { applyResults } from "@/lib/results";
 import { totalPoints } from "@/lib/scoring";
 import type { User } from "@/lib/types";
 
@@ -18,11 +19,12 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const users = getUsers();
+    const graded = applyResults(GROUP_MATCHES);
     const data: Row[] = users.map((u) => {
       const s = getUserState(u.id);
       return {
         user: u,
-        points: totalPoints(GROUP_MATCHES, s.predictions),
+        points: totalPoints(graded, s.predictions),
         preds: Object.keys(s.predictions).length,
       };
     });

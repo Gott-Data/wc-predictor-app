@@ -3,6 +3,8 @@
 import Link from "next/link";
 import UserGate from "@/components/UserGate";
 import { GROUP_MATCHES, SPECIAL_CATEGORIES } from "@/lib/data";
+import { applyResults } from "@/lib/results";
+import { totalPoints } from "@/lib/scoring";
 import { getUserState } from "@/lib/store";
 import { useEffect, useState } from "react";
 
@@ -15,13 +17,15 @@ export default function Home() {
 }
 
 function Dashboard({ user }: { user: { id: string; username: string; avatar: string } }) {
-  const [counts, setCounts] = useState({ preds: 0, specials: 0 });
+  const [counts, setCounts] = useState({ preds: 0, specials: 0, points: 0 });
 
   useEffect(() => {
     const s = getUserState(user.id);
+    const graded = applyResults(GROUP_MATCHES);
     setCounts({
       preds: Object.keys(s.predictions).length,
       specials: Object.keys(s.specials).length,
+      points: totalPoints(graded, s.predictions),
     });
   }, [user.id]);
 
@@ -46,10 +50,11 @@ function Dashboard({ user }: { user: { id: string; username: string; avatar: str
         </div>
       </section>
 
-      <section className="grid sm:grid-cols-3 gap-3">
-        <Stat label="Group predictions" value={`${counts.preds} / ${totalGroup}`} />
-        <Stat label="Big Board picks" value={`${counts.specials} / ${totalSpecials}`} />
-        <Stat label="Days until kickoff" value={`${daysLeft}`} hint="June 11 lock" />
+      <section className="grid sm:grid-cols-4 gap-3">
+        <Stat label="Points" value={`${counts.points}`} hint="Group stage" />
+        <Stat label="Group preds" value={`${counts.preds} / ${totalGroup}`} />
+        <Stat label="Big Board" value={`${counts.specials} / ${totalSpecials}`} />
+        <Stat label="Days to kickoff" value={`${daysLeft}`} hint="June 11" />
       </section>
 
       <section className="grid sm:grid-cols-2 gap-3">
@@ -66,16 +71,16 @@ function Dashboard({ user }: { user: { id: string; username: string; avatar: str
           emoji="🏆"
         />
         <CTA
-          href="/leaderboard"
-          title="Leaderboard"
-          desc="See who's ahead. (No grades until matches finish.)"
-          emoji="📊"
+          href="/matches"
+          title="Match Centre"
+          desc="Live results vs. your picks, points per match."
+          emoji="📺"
         />
         <CTA
-          href="/profile"
-          title="Profile"
-          desc="Switch player, reset, or check your picks."
-          emoji="👤"
+          href="/leaderboard"
+          title="Leaderboard"
+          desc="See who's ahead — updates as matches finish."
+          emoji="📊"
         />
       </section>
 

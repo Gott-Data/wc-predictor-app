@@ -7,8 +7,10 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/predictions", label: "Predictions" },
   { href: "/bigboard", label: "Big Board" },
+  { href: "/matches", label: "Match Centre" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/profile", label: "Profile" },
+  { href: "/admin", label: "Admin" },
 ];
 
 export default function Nav() {
